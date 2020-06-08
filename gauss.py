@@ -27,7 +27,7 @@ class SystemOfLinearEquationsSolution:
     def Gauss(self): 
         for i in range(self.rows - 1):
             self.forvard_stroke(i)
-        none_zero_rows = 0
+        self.none_zero_rows = 0
         #считаем сколько ненулевых строк в матрице
         for i in range(self.rows):
             check = 0
@@ -38,9 +38,9 @@ class SystemOfLinearEquationsSolution:
                 return ("Решений нет", [])
 
             if (check != 0):
-                none_zero_rows += 1
+                self.none_zero_rows += 1
                 
-        if (none_zero_rows == self.cols - 1):
+        if (self.none_zero_rows == self.cols - 1):
     
             j = self.rows - 1
             while (j >= 0):
@@ -48,8 +48,35 @@ class SystemOfLinearEquationsSolution:
                 j -= 1
             return ("Решение существует и оно единственное", self.ans)
         else:
-            return("Существует бесконечно много решений", [])
+            return self.multiple_solutions()
+            
+    def multiple_solutions(self):
+        basis_vars = []
+        big_answer = []
+        if(self.A[0][0] != 0):
+            basis_vars.append(0)
+        for i in range(self.rows - 1):
+            for j in range(self.cols - 1):
+                if(self.A[i][j] == 0 and self.A[i][j + 1] != 0):
+                    basis_vars.append(j + 1)
+                    break
         
+        free_vars = [i for i in range(self.cols - 1) if i not in basis_vars]
+        for var in free_vars:
+            self.ans = [0 for i in range(self.cols - 1)]
+            self.ans[var] = 1
+            current_row = self.none_zero_rows - 1
+            for i in range(len(basis_vars) - 1, -1, -1):
+                tmp = self.A[current_row][self.cols -1] # это у
+
+                for j in range(self.cols - 2, basis_vars[i], -1):
+                    tmp -= self.A[current_row][j] * self.ans[j]
+
+                tmp /= self.A[current_row][basis_vars[i]]
+                self.ans[basis_vars[i]] = round(tmp, 5)
+                current_row -= 1                
+            big_answer.append(self.ans)
+        return("Существует бесконечно много решений", big_answer)
 
 
 # arr = [ #одно решение 7, 3

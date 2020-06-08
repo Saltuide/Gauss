@@ -17,9 +17,6 @@ class Ui_MainWindow(object):
         MainWindow.resize(851, 771)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        # self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        # self.pushButton.setGeometry(QtCore.QRect(370, 230, 113, 32))
-        # self.pushButton.setObjectName("pushButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 851, 22))
@@ -38,5 +35,4 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        # self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
