@@ -1,3 +1,6 @@
+import math
+from functools import reduce
+
 class SystemOfLinearEquationsSolution:
     def __init__(self, A): #А-матрица (в ней же вектор b)
         self.A = A  # тут будет лежать матрица (в ней же вектор б)
@@ -37,8 +40,16 @@ class SystemOfLinearEquationsSolution:
         #приводим к треугольному виду
         for i in range(self.rows - 1):
             self.forvard_stroke(i)
-        self.none_zero_rows = 0
+        
+        for i in range(self.rows):
+            filA = list( filter(lambda x: x != 0, self.A[i]) )
+            if not len(filA):
+                continue
+            gcd = reduce(math.gcd, list(map(int, filA)))
+            self.A[i] = list(map(lambda x: x / gcd, self.A[i]))
+            
         #считаем сколько ненулевых строк в матрице
+        self.none_zero_rows = 0
         for i in range(self.rows):
             check = 0
             for j in range(self.cols - 1):

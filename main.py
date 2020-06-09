@@ -74,9 +74,14 @@ class mywindow(QtWidgets.QMainWindow):
         self.spin_for_cols.valueChanged.connect(self.update_table_cols)
         self.save_button.clicked.connect(self.save)
         self.load_button.clicked.connect(self.load)
+        self.table.cellChanged.connect(self.change_table)
         #тут будет лежать матрица
         self.my_A = []
     
+    def change_table(self):
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
+
     #при изменении размера матрицы на свободые места кидать нули
     def update_resize(self):
         # получаем количество строк и столбцов
