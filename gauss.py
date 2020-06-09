@@ -36,7 +36,7 @@ class SystemOfLinearEquationsSolution:
                 check += abs( self.A[i][j] )
                 
             if (check == 0 and self.A[i][self.cols - 1] != 0):
-                return ("Решений нет", [])
+                return ("Решений нет", [], 0)
 
             if (check != 0):
                 self.none_zero_rows += 1
@@ -47,7 +47,7 @@ class SystemOfLinearEquationsSolution:
             while (j >= 0):
                 self.return_stroke(j)
                 j -= 1
-            return ("Решение существует и оно единственное", self.ans)
+            return ("Решение существует и оно единственное", self.ans, 1)
         else:
             return self.multiple_solutions()
             
@@ -58,13 +58,12 @@ class SystemOfLinearEquationsSolution:
         if(self.A[0][0] != 0):
             first += 1
             basis_vars.append(0)
-        for i in range(first, self.rows - 1):
+        for i in range(first, self.rows):
             for j in range(self.cols - 1):
                 if(self.A[i][j] == 0 and self.A[i][j + 1] != 0):
                     basis_vars.append(j + 1)
                     break
         
-        print(basis_vars)
 
         free_vars = [i for i in range(self.cols - 1) if i not in basis_vars]
         for var in free_vars:
@@ -78,13 +77,11 @@ class SystemOfLinearEquationsSolution:
                     tmp -= self.A[current_row][j] * self.ans[j]
 
                 tmp /= self.A[current_row][basis_vars[i]]
-                # print(basis_vars)
-                # print("!!!!", i, basis_vars[i])
                 self.ans[basis_vars[i]] = round(tmp, 5)
                 
                 current_row -= 1                
             big_answer.append(self.ans)
-        return("Существует бесконечно много решений", big_answer)
+        return("Существует бесконечно много решений", big_answer, 2)
 
 
 # arr = [ #одно решение 7, 3

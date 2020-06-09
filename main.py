@@ -2,7 +2,9 @@ import sys
 import os
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QSpinBox, QPushButton, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import (QWidget, QLabel, QGridLayout,
+                             QSpinBox, QPushButton, QTableWidget,
+                             QTableWidgetItem, QTextEdit)
 
 from mydesign import Ui_MainWindow  # импорт нашего сгенерированного файла
 from gauss import SystemOfLinearEquationsSolution
@@ -17,10 +19,10 @@ class mywindow(QtWidgets.QMainWindow):
         self.label_for_cols = QLabel("Количество неизвестных")
         self.spin_for_rows = QSpinBox()
         self.spin_for_cols = QSpinBox()
-        self.spin_for_cols.setMinimum(4)
-        self.spin_for_rows.setMinimum(4)
+        self.spin_for_cols.setMinimum(2)
+        self.spin_for_rows.setMinimum(2)
         self.ans_verdict = QLabel("")
-        self.ans_vector = QLabel("")
+        self.ans_vector = QTextEdit("")
         self.save_button = QPushButton("Сохранить")
         self.load_button = QPushButton("Загрузить")
         self.header = QLabel("Решение систем линейных уравнений методом Гаусса")
@@ -32,32 +34,35 @@ class mywindow(QtWidgets.QMainWindow):
         
         self.many_zeros()
 
-        self.table.setItem(0, 0, QTableWidgetItem("2"))
-        self.table.setItem(0, 1, QTableWidgetItem("3"))
-        self.table.setItem(0, 2, QTableWidgetItem("-1"))
-        self.table.setItem(0, 3, QTableWidgetItem("1"))
-        self.table.setItem(0, 5, QTableWidgetItem("1"))
-        self.table.setItem(1, 0, QTableWidgetItem('8'))
-        self.table.setItem(1, 1, QTableWidgetItem('12'))
-        self.table.setItem(1, 2, QTableWidgetItem('-9'))
-        self.table.setItem(1, 3, QTableWidgetItem('8'))
-        self.table.setItem(1, 5, QTableWidgetItem('3'))
-        self.table.setItem(2, 0, QTableWidgetItem('4'))
-        self.table.setItem(2, 1, QTableWidgetItem('6'))
-        self.table.setItem(2, 2, QTableWidgetItem('3'))
-        self.table.setItem(2, 3, QTableWidgetItem('-2'))
-        self.table.setItem(2, 5, QTableWidgetItem('3'))
-        self.table.setItem(3, 0, QTableWidgetItem('2'))
-        self.table.setItem(3, 1, QTableWidgetItem('3'))
-        self.table.setItem(3, 2, QTableWidgetItem('9'))
-        self.table.setItem(3, 3, QTableWidgetItem('-7'))
-        self.table.setItem(3, 5, QTableWidgetItem('3'))
+        # self.table.setItem(0, 0, QTableWidgetItem("2"))
+        # self.table.setItem(0, 1, QTableWidgetItem("3"))
+        # self.table.setItem(0, 2, QTableWidgetItem("-1"))
+        # self.table.setItem(0, 3, QTableWidgetItem("1"))
+        # self.table.setItem(0, 5, QTableWidgetItem("1"))
+        # self.table.setItem(1, 0, QTableWidgetItem('8'))
+        # self.table.setItem(1, 1, QTableWidgetItem('12'))
+        # self.table.setItem(1, 2, QTableWidgetItem('-9'))
+        # self.table.setItem(1, 3, QTableWidgetItem('8'))
+        # self.table.setItem(1, 5, QTableWidgetItem('3'))
+        # self.table.setItem(2, 0, QTableWidgetItem('4'))
+        # self.table.setItem(2, 1, QTableWidgetItem('6'))
+        # self.table.setItem(2, 2, QTableWidgetItem('3'))
+        # self.table.setItem(2, 3, QTableWidgetItem('-2'))
+        # self.table.setItem(2, 5, QTableWidgetItem('3'))
+        # self.table.setItem(3, 0, QTableWidgetItem('2'))
+        # self.table.setItem(3, 1, QTableWidgetItem('3'))
+        # self.table.setItem(3, 2, QTableWidgetItem('9'))
+        # self.table.setItem(3, 3, QTableWidgetItem('-7'))
+        # self.table.setItem(3, 5, QTableWidgetItem('3'))
 
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
 
         self.table_triangle = QTableWidget()
         self.table_triangle.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
+        
+        self.ans_verdict.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
+        self.ans_vector.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
         # self.table_triangle.setColumnCount(3)
         # self.table_triangle.setRowCount(3)
 
@@ -116,9 +121,9 @@ class mywindow(QtWidgets.QMainWindow):
                 if (self.table.item(i, j) != None):
                     try:
                         arr.append(float(self.table.item(i, j).text()))
-                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
+                        self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
                     except ValueError:
-                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
+                        self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
                         return
                 else:
                     arr.append(0)
@@ -126,15 +131,19 @@ class mywindow(QtWidgets.QMainWindow):
         
         f = open('test.txt', 'w')
         f.write(f'{rows} {cols} \n')
-        f.write(str(self.my_A).replace('[', '').replace(',', '').
+        f.write(str(self.my_A).replace('[', '').
+                                replace(',', '').
                                 replace('] ', '\n').
                                 replace(']', ''))
         f.close()
 
     def load(self):
-        text = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open file', '', "*.txt")
-        path = text[0][0]
-        f = open(path, 'r')
+        current_dir = os.getcwd()
+        # text = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open file', '', "*.txt")
+        # if(not len(text[0])): #на случай, если не выбрали файл
+        #     return
+        # path = text[0][0]
+        f = open(current_dir + '/test.txt',  'r')
         counter = -1
         for line in f:
             if(counter == -1):
@@ -211,25 +220,30 @@ class mywindow(QtWidgets.QMainWindow):
                 if (self.table.item(i, j) != None):
                     try:
                         arr.append(float(self.table.item(i, j).text()))
-                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
+                        self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
                     except ValueError:
-                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
+                        self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
                         return
                 else:
                     arr.append(0)
             self.my_A.append(arr)
 
         solution = SystemOfLinearEquationsSolution(self.my_A)
-        res_text, res = solution.Gauss()
+        res_text, res, num = solution.Gauss()
         self.ans_verdict.setText(res_text)
-        if (len(res)):
+        if (num == 2):
             fsr = 'ФСР: '
             for i, arr in enumerate(res):
                 fsr += f'c{i + 1} * {arr} + '
             fsr = fsr[:-2]
+            fsr += ', ci - const'
             
             self.ans_vector.setText(fsr)
-
+        elif(num == 1):
+            self.ans_vector.setText(str(res))
+        
+        else:
+            self.ans_vector.setText('')
         self.paint_triangle(solution.A)
 
     def update_table_rows(self):
