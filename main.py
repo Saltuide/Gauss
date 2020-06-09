@@ -53,6 +53,9 @@ class mywindow(QtWidgets.QMainWindow):
         self.table.setItem(3, 3, QTableWidgetItem('-7'))
         self.table.setItem(3, 5, QTableWidgetItem('3'))
 
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
+
         self.table_triangle = QTableWidget()
         self.table_triangle.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
         # self.table_triangle.setColumnCount(3)
@@ -113,9 +116,9 @@ class mywindow(QtWidgets.QMainWindow):
                 if (self.table.item(i, j) != None):
                     try:
                         arr.append(float(self.table.item(i, j).text()))
-                        self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
+                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
                     except ValueError:
-                        self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
+                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
                         return
                 else:
                     arr.append(0)
@@ -148,7 +151,8 @@ class mywindow(QtWidgets.QMainWindow):
                     else:
                         self.table.setItem(counter, i, QTableWidgetItem(elem))
                 counter += 1
-                
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
         f.close()
 
     def many_zeros(self):
@@ -207,9 +211,9 @@ class mywindow(QtWidgets.QMainWindow):
                 if (self.table.item(i, j) != None):
                     try:
                         arr.append(float(self.table.item(i, j).text()))
-                        self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
+                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
                     except ValueError:
-                        self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
+                        # self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
                         return
                 else:
                     arr.append(0)

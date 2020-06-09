@@ -6,6 +6,7 @@ class SystemOfLinearEquationsSolution:
         self.cols = len(A[0])
         self.ans = [0 for i in range(self.rows)]
 
+
     def forvard_stroke(self, pos):
         k = pos
         while (k < self.rows and self.A[k][pos] == 0):
@@ -13,7 +14,7 @@ class SystemOfLinearEquationsSolution:
         if (k < self.rows and k != pos):
             self.A[k], self.A[pos] = self.A[pos], self.A[k]
         for i in range(pos + 1, self.rows):
-            for j in range(pos + 1, self.rows + 1):
+            for j in range(pos + 1, self.cols):
                 self.A[i][j] = self.A[pos][pos] * self.A[i][j] - self.A[pos][j] * self.A[i][pos]
             self.A[i][pos] = 0.0
             
@@ -53,14 +54,18 @@ class SystemOfLinearEquationsSolution:
     def multiple_solutions(self):
         basis_vars = []
         big_answer = []
+        first = 0
         if(self.A[0][0] != 0):
+            first += 1
             basis_vars.append(0)
-        for i in range(self.rows - 1):
+        for i in range(first, self.rows - 1):
             for j in range(self.cols - 1):
                 if(self.A[i][j] == 0 and self.A[i][j + 1] != 0):
                     basis_vars.append(j + 1)
                     break
         
+        print(basis_vars)
+
         free_vars = [i for i in range(self.cols - 1) if i not in basis_vars]
         for var in free_vars:
             self.ans = [0 for i in range(self.cols - 1)]
@@ -73,7 +78,10 @@ class SystemOfLinearEquationsSolution:
                     tmp -= self.A[current_row][j] * self.ans[j]
 
                 tmp /= self.A[current_row][basis_vars[i]]
+                # print(basis_vars)
+                # print("!!!!", i, basis_vars[i])
                 self.ans[basis_vars[i]] = round(tmp, 5)
+                
                 current_row -= 1                
             big_answer.append(self.ans)
         return("Существует бесконечно много решений", big_answer)
