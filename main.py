@@ -14,69 +14,47 @@ class mywindow(QtWidgets.QMainWindow):
         super(mywindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+        #объявление объектов
         self.label_for_rows = QLabel("Количество уравнений")
         self.label_for_cols = QLabel("Количество неизвестных")
         self.spin_for_rows = QSpinBox()
         self.spin_for_cols = QSpinBox()
-        self.spin_for_cols.setMinimum(2)
-        self.spin_for_rows.setMinimum(2)
         self.ans_verdict = QLabel("")
         self.ans_vector = QTextEdit("")
         self.save_button = QPushButton("Сохранить")
         self.load_button = QPushButton("Загрузить")
         self.header = QLabel("Решение систем линейных уравнений методом Гаусса")
-        self.header.setAlignment(QtCore.Qt.AlignHCenter)
         self.solve_button = QPushButton("Привести к треугольному виду и решить")  
-
         self.table = QTableWidget()
-        self.table.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin)) 
-        
-        self.many_zeros()
-
-        # self.table.setItem(0, 0, QTableWidgetItem("2"))
-        # self.table.setItem(0, 1, QTableWidgetItem("3"))
-        # self.table.setItem(0, 2, QTableWidgetItem("-1"))
-        # self.table.setItem(0, 3, QTableWidgetItem("1"))
-        # self.table.setItem(0, 5, QTableWidgetItem("1"))
-        # self.table.setItem(1, 0, QTableWidgetItem('8'))
-        # self.table.setItem(1, 1, QTableWidgetItem('12'))
-        # self.table.setItem(1, 2, QTableWidgetItem('-9'))
-        # self.table.setItem(1, 3, QTableWidgetItem('8'))
-        # self.table.setItem(1, 5, QTableWidgetItem('3'))
-        # self.table.setItem(2, 0, QTableWidgetItem('4'))
-        # self.table.setItem(2, 1, QTableWidgetItem('6'))
-        # self.table.setItem(2, 2, QTableWidgetItem('3'))
-        # self.table.setItem(2, 3, QTableWidgetItem('-2'))
-        # self.table.setItem(2, 5, QTableWidgetItem('3'))
-        # self.table.setItem(3, 0, QTableWidgetItem('2'))
-        # self.table.setItem(3, 1, QTableWidgetItem('3'))
-        # self.table.setItem(3, 2, QTableWidgetItem('9'))
-        # self.table.setItem(3, 3, QTableWidgetItem('-7'))
-        # self.table.setItem(3, 5, QTableWidgetItem('3'))
-
-        self.table.resizeColumnsToContents()
-        self.table.resizeRowsToContents()
-
         self.table_triangle = QTableWidget()
-        self.table_triangle.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
-        
-        self.ans_verdict.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
-        self.ans_vector.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
-        # self.table_triangle.setColumnCount(3)
-        # self.table_triangle.setRowCount(3)
-
+        grid = QGridLayout()
+        #настройки для спинов
+        self.spin_for_cols.setMinimum(2)
+        self.spin_for_rows.setMinimum(2)
+        self.spin_for_rows.lineEdit().setReadOnly(True)
+        self.spin_for_cols.lineEdit().setReadOnly(True)
+        #наводим красоту для заголовка
+        self.header.setAlignment(QtCore.Qt.AlignHCenter)
         self.header.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Light)) 
         self.header.setStyleSheet("""
             margin-top: 20px;
             margin-bottom: 20px;
         """)
+        #изачально заполняем нулями главную таблицу
+        self.many_zeros()
+        #наводим красоту для главной таблицы
+        self.table.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin)) 
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
+        #наводим красоту для главной таблицы
+        self.table_triangle.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
+        #наводим красоту для вывода ответов
+        self.ans_verdict.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
+        self.ans_vector.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
 
-        
-        grid = QGridLayout()
+        #позиционирование элементов
         grid.setSpacing(10)
         grid.addWidget(self.header, 0, 0, 1, 6)
-
         grid.addWidget(self.label_for_rows, 1, 0)
         grid.addWidget(self.spin_for_rows, 1, 1)
         grid.addWidget(self.label_for_cols, 1, 2)
@@ -88,31 +66,42 @@ class mywindow(QtWidgets.QMainWindow):
         grid.addWidget(self.table_triangle, 4, 0, 1, 6)
         grid.addWidget(self.ans_verdict, 5, 0, 1, 6)
         grid.addWidget(self.ans_vector, 6, 0, 1, 6)
-
+        
         self.ui.centralwidget.setLayout(grid)
+        #обработка действий
         self.solve_button.clicked.connect(self.solve)
         self.spin_for_rows.valueChanged.connect(self.update_table_rows)
         self.spin_for_cols.valueChanged.connect(self.update_table_cols)
         self.save_button.clicked.connect(self.save)
         self.load_button.clicked.connect(self.load)
-        
+        #тут будет лежать матрица
         self.my_A = []
     
+    #при изменении размера матрицы на свободые места кидать нули
     def update_resize(self):
+        # получаем количество строк и столбцов
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
+        #проходимся по матрице
         for i in range(rows):
             for j in range(cols + 2):
+                #если ячейка пустая, ставим ноль
                 if(self.table.item(i, j) == None):
                     self.table.setItem(i, j, QTableWidgetItem('0'))
+                #чтоб было красиво
                 self.table.item(i, j).setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
                 if(j == cols):
+                    #нельзя редактировать "="
                     self.table.item(i, j).setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
+    #Для сохранения
     def save(self):
+        # получаем количество строк и столбцов
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
+        #обнуляем матрицу
         self.my_A = []
+        #заполняем матрицу А введенными значениями
         for i in range(rows):
             arr = []
             for j in range(cols + 2):
@@ -123,36 +112,43 @@ class mywindow(QtWidgets.QMainWindow):
                         arr.append(float(self.table.item(i, j).text()))
                         self.table.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
                     except ValueError:
+                        #если пользователь ввел некорректные значения, то ячейку красим в красный и выходим
                         self.table.item(i, j).setBackground(QtGui.QColor(255, 0, 0))
                         return
                 else:
+                    #на всякий случай
                     arr.append(0)
             self.my_A.append(arr)
         
+        #открываем файл для записи
         f = open('test.txt', 'w')
+        #записываем строки и столбцы
         f.write(f'{rows} {cols} \n')
+        #записываем матрицу
         f.write(str(self.my_A).replace('[', '').
                                 replace(',', '').
                                 replace('] ', '\n').
                                 replace(']', ''))
+        #закрываем файл
         f.close()
 
+    #Для загрузки
     def load(self):
         current_dir = os.getcwd()
-        # text = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open file', '', "*.txt")
-        # if(not len(text[0])): #на случай, если не выбрали файл
-        #     return
-        # path = text[0][0]
+        #открываем файл
         f = open(current_dir + '/test.txt',  'r')
+        #счетчик для номера считываемой линии
         counter = -1
+        #идем по строчкам файла
         for line in f:
+            #устанавливаем размер матрицы
             if(counter == -1):
                 size = line.split(' ')
                 self.spin_for_rows.setValue(int(size[0]))
                 self.spin_for_cols.setValue(int(size[1]))
                 counter += 1
                 self.many_zeros()
-            else:
+            else: #считываем и записываем матрицу
                 elems = line.split(' ')
                 for i, elem in enumerate(elems):
                     if(i == self.spin_for_cols.value()):
@@ -160,19 +156,27 @@ class mywindow(QtWidgets.QMainWindow):
                     else:
                         self.table.setItem(counter, i, QTableWidgetItem(elem))
                 counter += 1
+        #размер ячеек под контент
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
+        #закрываем файл
         f.close()
 
+    # функция для начального заполнения нулями
     def many_zeros(self):
+        # получаем количество строк и столбцов
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
+        #меняем размер таблицы
         self.table.setRowCount(rows)
         self.table.setColumnCount(cols + 2)
+        # генерируем и устанавливаем подписи
         headers = [f'x{i + 1}' for i in range(cols)]
         headers.append("=")
         headers.append("y")
         self.table.setHorizontalHeaderLabels(headers)
+
+        #заполняем
         for i in range(rows):
             for j in range(cols + 2):
                 if (j == cols):
@@ -181,18 +185,26 @@ class mywindow(QtWidgets.QMainWindow):
                 else:
                     self.table.setItem(i, j, QTableWidgetItem('0'))
                 self.table.item(i, j).setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+        #размер под контент
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
 
+    #отрисовываем найденную треугольную матрицу
     def paint_triangle(self, new_A):
+        # получаем количество строк и столбцов
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
+        #устанавливаем размер таблицы
         self.table_triangle.setRowCount(rows)
         self.table_triangle.setColumnCount(cols + 2)
+
+        #генерируем и устанавливаем подписи
         headers = [f'x{i + 1}' for i in range(cols)]
         headers.append("=")
         headers.append("y")
         self.table_triangle.setHorizontalHeaderLabels(headers)
+
+        #вписываем
         for i in range(rows):
             for j in range(cols):
                 self.table_triangle.setItem(i, j, QTableWidgetItem(str(new_A[i][j])))
@@ -205,12 +217,16 @@ class mywindow(QtWidgets.QMainWindow):
             self.table_triangle.item(i, cols + 1).setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
             self.table_triangle.item(i, cols + 1).setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
+        #под контент подгоняем размер
         self.table_triangle.resizeColumnsToContents()
         self.table_triangle.resizeRowsToContents()
 
+    #решаем
     def solve(self):
+        # получаем количество строк и столбцов
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
+        #в А записываем введенные значения
         self.my_A = []
         for i in range(rows):
             arr = []
@@ -228,37 +244,43 @@ class mywindow(QtWidgets.QMainWindow):
                     arr.append(0)
             self.my_A.append(arr)
 
+        #Находим ответ
         solution = SystemOfLinearEquationsSolution(self.my_A)
         res_text, res, num = solution.Gauss()
         self.ans_verdict.setText(res_text)
+        #в зависимости от количества ответов выводим результат
         if (num == 2):
             fsr = 'ФСР: '
             for i, arr in enumerate(res):
                 fsr += f'c{i + 1} * {arr} + '
             fsr = fsr[:-2]
             fsr += ', ci - const'
-            
             self.ans_vector.setText(fsr)
         elif(num == 1):
             self.ans_vector.setText(str(res))
-        
         else:
             self.ans_vector.setText('')
         self.paint_triangle(solution.A)
 
+    #при изменении количества уравнений
     def update_table_rows(self):
+        # получаем количество строк и столбцов
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
+        # устанавливаем новый размер таблицы
         self.table.setRowCount(rows)
+        #при необходимости вписываем нули
         for i in range(cols + 2):
             if (i == cols):
                 self.table.setItem(rows - 1, i, QTableWidgetItem('='))
             elif (self.table.item(rows - 1, i) == None):
                 self.table.setItem(rows - 1, i, QTableWidgetItem('0'))
+        #ячейки под контент
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
         self.update_resize()
       
+    #аналогично с предыдущей
     def update_table_cols(self):
         cols = self.spin_for_cols.value()
         rows = self.spin_for_rows.value()
