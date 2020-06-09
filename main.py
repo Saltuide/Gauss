@@ -51,6 +51,7 @@ class mywindow(QtWidgets.QMainWindow):
         #наводим красоту для вывода ответов
         self.ans_verdict.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
         self.ans_vector.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Thin))
+        self.ans_vector.setReadOnly(True)
 
         #позиционирование элементов
         grid.setSpacing(10)
